@@ -1,7 +1,7 @@
 NFSIISE
 =======
 
-![Screenshot](http://zaps166.sourceforge.net/gh-imgs/NFSIISE-screenshot.png)
+![Screenshot](http://zaps166.sourceforge.net/gh-imgs/NFSIISE-OSX-screenshot.png)
 
 Need For Speed II SE - Linux port with 3D acceleration and TCP protocol! The game also can run under Windows and OS X (experimental).
 
