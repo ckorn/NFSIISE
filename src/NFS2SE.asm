@@ -10,6 +10,7 @@ global dword_4DDA70
 global dword_5637A0
 global mousePositionX
 global mousePositionY
+global canRunWindowThread
 
 extern SDL_NumJoysticks_wrap
 extern SDL_GetTicks_wrap
@@ -71,6 +72,7 @@ extern guFogGenerateExp
 extern WrapperCreateWindow
 extern fetchTrackRecords
 extern WrapperAtExit
+extern startInThread
 extern WrapperInit
 extern startTimer
 extern stopTimer
@@ -169879,8 +169881,7 @@ loc_480EDC:
 ; 	call sub_489AE0
 ; 	test eax, eax
 ; 	jz loc_480F63
-extern windowThread
-	call windowThread
+	mov byte [canRunWindowThread], 1
 
 	xor edx, edx
 
@@ -218415,15 +218416,19 @@ loc_4B2D47:
 	ret 4
 ;sub_4B2D3C endp
 
-global mainCodeInSeparateThread
-extern startInThread
-
 ;	Attributes: library function bp-based frame
 
 start: ;SUBROUTINE
+	push mainCodeInSeparateThread
 	call startInThread
 	call sub_481080 ;Call the window thread function, but do it in main thread
-	jmp $ ;Infinity loop (TODO: lock and wait for exit)
+
+infinitySleep:
+	push 1 ; bAlertable
+	push 0FFFFFFFFh ; dwMilliseconds
+	call SleepEx_wrap
+	jmp infinitySleep
+;start endp
 
 mainCodeInSeparateThread:
 	call WrapperInit
@@ -218441,7 +218446,7 @@ mainCodeInSeparateThread:
 	mov [ecx+0F0h], eax
 	mov dword [lpTlsValue], ecx
 	jmp sub_4BB81E
-;start endp
+;mainCodeInSeparateThread endp
 
 sub_4B2FD0: ;SUBROUTINE
 	push edx
@@ -238700,6 +238705,7 @@ dword_4E2AEC: dd 2000h
 	dd 2AA1h, 2D41h, 3249h, 3B21h, 4B42h, 6D41h, 0D650h, 73FCh
 	dd 539Fh, 58C5h, 62A3h, 73FCh, 939Fh, 0D650h, 1A463h, 0
 timerIsRunning: dd 0
+canRunWindowThread: db 0
 
 section .bss
 

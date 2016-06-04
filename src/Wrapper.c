@@ -254,9 +254,15 @@ uint16_t PORT1 = 1030, PORT2 = 1029;
 
 REALIGN void WrapperInit(void)
 {
+	if (SDL_Init(SDL_INIT_EVERYTHING & ~SDL_INIT_GAMECONTROLLER) < 0)
+		fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
+
 	BOOL useOnlyOneCPU = true;
 	uint32_t msaa = 0;
 	FILE *f = NULL;
+
+	SDL_JoystickEventState(SDL_IGNORE);
+	SDL_ShowCursor(false);
 
 #ifdef WIN32
 	const char *homeDir = getenv("AppData");
@@ -590,27 +596,11 @@ REALIGN time_t time_wrap(time_t *timer)
 
 /* WIP code for swap main_thread<->window_thread for Cocoa(OSX) */
 
-static SDL_mutex *win_mutex;
+extern volatile uint8_t canRunWindowThread;
 
-void mainCodeInSeparateThread();
-
-REALIGN void startInThread()
+REALIGN STDCALL void startInThread(SDL_ThreadFunction mainCodeInSeparateThread)
 {
-	if (SDL_Init((SDL_INIT_EVERYTHING | SDL_INIT_NOPARACHUTE) & ~SDL_INIT_GAMECONTROLLER) < 0)
-		fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
-
-	SDL_JoystickEventState(SDL_IGNORE);
-	SDL_ShowCursor(false);
-
-	win_mutex = SDL_CreateMutex();
-	SDL_LockMutex(win_mutex);
-
-	SDL_DetachThread(SDL_CreateThread((SDL_ThreadFunction)mainCodeInSeparateThread, NULL, NULL));
-
-	SDL_LockMutex(win_mutex); //Wait...
-}
-
-REALIGN void windowThread()
-{
-	SDL_UnlockMutex(win_mutex);
+	SDL_DetachThread(SDL_CreateThread(mainCodeInSeparateThread, NULL, NULL));
+	while (!canRunWindowThread)
+		SDL_Delay(1);
 }
