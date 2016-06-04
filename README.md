@@ -3,7 +3,7 @@ NFSIISE
 
 ![Screenshot](http://zaps166.sourceforge.net/gh-imgs/NFSIISE-screenshot.png)
 
-Need For Speed II SE - Linux port with 3D acceleration and TCP protocol! The game also can run under Windows.
+Need For Speed II SE - Linux port with 3D acceleration and TCP protocol! The game also can run under Windows and OS X (experimental).
 
 ## Compile:
 
@@ -14,6 +14,7 @@ Need For Speed II SE - Linux port with 3D acceleration and TCP protocol! The gam
  * SDL2 devel.
 * Edit the "compile_nfs" script, modify what do you want. Compile the game by executing the script - it will automaticly generate executable file inside "Need For Speed II SE" directory:
  * `./compile_nfs` - compilation for Linux,
+ * `./compile_nfs osx` - compilation for OS X (requires 32-bit SDL2),
  * `./compile_nfs win32` - cross compilation for Windows.
 
 ## Run:
@@ -65,7 +66,6 @@ Need For Speed II SE - Linux port with 3D acceleration and TCP protocol! The gam
 
 ## Additional information:
 
-* The game doesn't work on OS X, because window and event loop aren't in main thread - this doesn't work in Cocoa - the game runs, but it can't get any mouse, keyboard and WM events,
 * The game is not tested under *BSD systems. Probably it can run after a few code changes.
 * Cockpit view is unavailable (original 3D-accelerated version doesn't have this).
 * If the game crashes it might not restore the gamma properly. In this case run: `xgamma -gamma 1.0`.

@@ -170085,10 +170085,10 @@ loc_481339:
 	call WrapperCreateWindow
 	mov esi, eax
 	call sub_497244
-; 	push 1
-; 	push 2
-; 	push 1
-; 	call sub_497318 ;This cannot be called in this thread (all OpenGL calls should be done in the same thread)
+;	push 1
+;	push 2
+;	push 1
+;	call sub_497318 ;This cannot be called in this thread (all OpenGL calls should be done in the same thread)
 	mov eax, esi
 	add esp, 10h
 	pop ebp
