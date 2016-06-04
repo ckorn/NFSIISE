@@ -258,9 +258,6 @@ REALIGN void WrapperInit(void)
 	uint32_t msaa = 0;
 	FILE *f = NULL;
 
-	SDL_JoystickEventState(SDL_IGNORE);
-	SDL_ShowCursor(false);
-
 #ifdef WIN32
 	const char *homeDir = getenv("AppData");
 #else
@@ -601,6 +598,9 @@ REALIGN void startInThread()
 {
 	if (SDL_Init((SDL_INIT_EVERYTHING | SDL_INIT_NOPARACHUTE) & ~SDL_INIT_GAMECONTROLLER) < 0)
 		fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
+
+	SDL_JoystickEventState(SDL_IGNORE);
+	SDL_ShowCursor(false);
 
 	win_mutex = SDL_CreateMutex();
 	SDL_LockMutex(win_mutex);

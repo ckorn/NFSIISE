@@ -218422,7 +218422,8 @@ extern startInThread
 
 start: ;SUBROUTINE
 	call startInThread
-	jmp sub_481080 ;Jump to window thread function, but do it in main thread
+	call sub_481080 ;Call the window thread function, but do it in main thread
+	jmp $ ;Infinity loop (TODO: lock and wait for exit)
 
 mainCodeInSeparateThread:
 	call WrapperInit
