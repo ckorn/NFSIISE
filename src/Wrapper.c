@@ -254,9 +254,6 @@ uint16_t PORT1 = 1030, PORT2 = 1029;
 
 REALIGN void WrapperInit(void)
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING & ~SDL_INIT_GAMECONTROLLER) < 0)
-		fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
-
 	BOOL useOnlyOneCPU = true;
 	uint32_t msaa = 0;
 	FILE *f = NULL;
@@ -600,6 +597,8 @@ extern volatile uint8_t canRunWindowThread;
 
 REALIGN STDCALL void startInThread(SDL_ThreadFunction mainCodeInSeparateThread)
 {
+	if (SDL_Init(SDL_INIT_EVERYTHING & ~SDL_INIT_GAMECONTROLLER) < 0)
+		fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
 	SDL_DetachThread(SDL_CreateThread(mainCodeInSeparateThread, NULL, NULL));
 	while (!canRunWindowThread)
 		SDL_Delay(1);
