@@ -169870,15 +169870,18 @@ loc_480EDC:
 	mov ecx, 0FFFFFFFFh
 	mov byte [byte_563D5D], bl
 	mov dword [dword_563D74], eax
-	mov eax, [esp+3Ch]
-	xor edx, edx
-	lea eax, [esp+28h]
-	mov ebx, 1
-	push eax
-	mov eax, sub_481080
-	call sub_489AE0
-	test eax, eax
-	jz loc_480F63
+; 	mov eax, [esp+3Ch]
+; 	xor edx, edx
+; 	lea eax, [esp+28h]
+; 	mov ebx, 1
+; 	push eax
+; 	mov eax, sub_481080
+; 	call sub_489AE0
+; 	test eax, eax
+; 	jz loc_480F63
+extern windowThread
+	call windowThread
+
 	xor edx, edx
 
 loc_480F1C:
@@ -170082,10 +170085,10 @@ loc_481339:
 	call WrapperCreateWindow
 	mov esi, eax
 	call sub_497244
-;	push 1
-;	push 2
-;	push 1
-;	call sub_497318 ;This cannot be called in this thread
+; 	push 1
+; 	push 2
+; 	push 1
+; 	call sub_497318 ;This cannot be called in this thread (all OpenGL calls should be done in the same thread)
 	mov eax, esi
 	add esp, 10h
 	pop ebp
@@ -218412,9 +218415,16 @@ loc_4B2D47:
 	ret 4
 ;sub_4B2D3C endp
 
+global mainCodeInSeparateThread
+extern startInThread
+
 ;	Attributes: library function bp-based frame
 
 start: ;SUBROUTINE
+	call startInThread
+	jmp sub_481080 ;Jump to window thread function, but do it in main thread
+
+mainCodeInSeparateThread:
 	call WrapperInit
 	sub esp, 8
 	mov eax, dword [dword_4E0950]

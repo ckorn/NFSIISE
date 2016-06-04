@@ -252,11 +252,8 @@ BOOL linearSoundInterpolation = false, useGlBleginGlEnd = false, keepAspectRatio
 uint32_t fullScreenFlag = SDL_WINDOW_FULLSCREEN_DESKTOP, broadcast = 0xFFFFFFFF;
 uint16_t PORT1 = 1030, PORT2 = 1029;
 
-void WrapperInit(void)
+REALIGN void WrapperInit(void)
 {
-	if (SDL_Init((SDL_INIT_EVERYTHING | SDL_INIT_NOPARACHUTE) & ~SDL_INIT_GAMECONTROLLER) < 0)
-		fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
-
 	BOOL useOnlyOneCPU = true;
 	uint32_t msaa = 0;
 	FILE *f = NULL;
@@ -592,4 +589,28 @@ REALIGN void free_wrap(void *ptr)
 REALIGN time_t time_wrap(time_t *timer)
 {
 	return time(timer);
+}
+
+/* WIP code for swap main_thread<->window_thread for Cocoa(OSX) */
+
+static SDL_mutex *win_mutex;
+
+void mainCodeInSeparateThread();
+
+REALIGN void startInThread()
+{
+	if (SDL_Init((SDL_INIT_EVERYTHING | SDL_INIT_NOPARACHUTE) & ~SDL_INIT_GAMECONTROLLER) < 0)
+		fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
+
+	win_mutex = SDL_CreateMutex();
+	SDL_LockMutex(win_mutex);
+
+	SDL_DetachThread(SDL_CreateThread((SDL_ThreadFunction)mainCodeInSeparateThread, NULL, NULL));
+
+	SDL_LockMutex(win_mutex); //Wait...
+}
+
+REALIGN void windowThread()
+{
+	SDL_UnlockMutex(win_mutex);
 }
